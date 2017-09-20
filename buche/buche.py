@@ -110,7 +110,11 @@ class Buche:
         if not self.opened:
             self._open()
         if name.startswith('/'):
-            raise ValueError('Channel name for open() cannot start with /')
+            if self.path == '/':
+                name = name.lstrip('/')
+            else:
+                raise ValueError('Channel name for open() cannot start with /'
+                                 ' unless called on the root channel.')
         parts = re.split('/+', name, 1)
         if len(parts) == 1:
             if name in self.subchannels:
