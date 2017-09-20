@@ -13,6 +13,7 @@ Usage
 You must install Buche_ through npm first (``npm install -g buche``). This package helps interact with Buche, but it is not the application itself. Once you have written your script, use it as follows:
 
 .. code:: bash
+
     buche -c 'python -u yourscript.py'
 
 Sample script:
