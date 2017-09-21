@@ -14,7 +14,7 @@ with open(path.join(here, 'README.rst'), encoding='utf-8') as f:
 
 setup(
     name='buche',
-    version='0.1.1',
+    version='0.1.2',
 
     description='Pretty-print Python objects to Buche logger.',
     long_description=long_description,

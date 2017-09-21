@@ -95,7 +95,7 @@ class Buche:
 
     def log(self, contents, format='text', **params):
         self.send(command='log', format=format,
-                   content=contents, **params)
+                  contents=contents, **params)
 
     def pre(self, contents, **params):
         self.log(contents, format = 'pre', **params)
@@ -159,6 +159,8 @@ class Buche:
         return self.open(name, type, {})
 
     def show(self, obj, **params):
+        if not self.opened:
+            self._open()
         self.master.show(obj, path=self.path, **params)
 
     def __call__(self, *objs, **keys):
