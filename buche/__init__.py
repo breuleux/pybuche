@@ -3,6 +3,7 @@ import sys
 from .buche import *
 from .repr import *
 from .event import *
+from .debug import *
 
 
 def _print_flush(x):
