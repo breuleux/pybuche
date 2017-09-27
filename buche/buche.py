@@ -1,4 +1,5 @@
 
+import asyncio
 import json
 import re
 from threading import Thread
@@ -181,8 +182,10 @@ class Buche:
 class Reader(EventDispatcher):
     def __init__(self, source):
         super().__init__()
+        self.ev_loop = asyncio.get_event_loop()
         self.source = source
         self.thread = Thread(target=self.loop)
+        self.futures = []
 
     def read(self):
         line = self.source.readline()
@@ -194,6 +197,10 @@ class Reader(EventDispatcher):
             d['obj'] = id_registry.resolve(int(d['objId']))
         message = ObjDict(d)
         self.emit(d.get('command', 'UNDEFINED'), message)
+        # Provide the message to all the coroutines waiting for one
+        futs, self.futures = self.futures, []
+        for fut in futs:
+            self.ev_loop.call_soon_threadsafe(fut.set_result, message)
         return message
 
     def __iter__(self):
@@ -206,3 +213,8 @@ class Reader(EventDispatcher):
 
     def start(self):
         self.thread.start()
+
+    def read_async(self):
+        fut = asyncio.Future()
+        self.futures.append(fut)
+        return fut
