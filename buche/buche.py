@@ -107,6 +107,11 @@ class Buche:
         self.log(contents, format = 'markdown', **params)
 
     def open(self, name, type, params, force=False):
+        if name == '/' and self.path == '/':
+            self.configure(type, params)
+            if force:
+                self._open()
+            return self
         if not self.opened:
             self._open()
         if name.startswith('/'):
