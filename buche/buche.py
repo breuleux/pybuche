@@ -82,6 +82,7 @@ class Buche:
         if type:
             self.type = type
         self.params.update(params)
+        return self
 
     def send(self, path=None, **params):
         if not self.opened:

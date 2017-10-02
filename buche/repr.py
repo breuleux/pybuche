@@ -128,4 +128,4 @@ class HRepr(StdHRepr):
         except TypeError as e:
             return res
         else:
-            return self.H.replObject({'obj-id': the_id})(res)
+            return self.H.iBox({'obj-id': the_id})(res)
