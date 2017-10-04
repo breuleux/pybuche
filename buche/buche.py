@@ -7,12 +7,12 @@ from .event import EventDispatcher
 from .repr import id_registry
 
 
-class ObjDict:
+class BucheMessage:
     def __init__(self, d):
         self.__dict__.update(d)
 
     def __hrepr__(self, H, hrepr):
-        return hrepr(self.__dict__)
+        return hrepr.stdrepr_object('BucheMessage', self.__dict__.items())
 
 
 class BucheSeq:
@@ -28,6 +28,17 @@ class BucheSeq:
 
     def __hrepr__(self, H, hrepr):
         return H.div['multi-print'](*map(hrepr, self.objects))
+
+
+class BucheDict:
+    def __init__(self, keys):
+        if hasattr(keys, 'items'):
+            self.keys = keys.items()
+        else:
+            self.keys = keys
+
+    def __hrepr__(self, H, hrepr):
+        return hrepr.stdrepr_object(None, self.keys)
 
 
 class MasterBuche:
@@ -54,8 +65,8 @@ class MasterBuche:
                 contents = str(res)
             )
             self.resources.add(res)
-        self.send(command='log',
-                  format='html',
+        params.setdefault('command', 'log')
+        self.send(format='html',
                   contents=str(x),
                   **params)
 
@@ -165,19 +176,21 @@ class Buche:
             name, type = descr
         return self.open(name, type, {})
 
-    def show(self, obj, **params):
+    def show(self, obj, hrepr_params={}, **params):
         if not self.opened:
             self._open()
-        self.master.show(obj, path=self.path, **params)
+        self.master.show(obj, hrepr_params=hrepr_params,
+                         path=self.path, **params)
 
-    def __call__(self, *objs, **keys):
-        if len(objs) == 1 and not keys:
+    def dict(self, **keys):
+        self.show(BucheDict(keys))
+
+    def __call__(self, *objs, **hrepr_params):
+        if len(objs) == 1:
             o, = objs
         else:
             o = BucheSeq(objs)
-            if keys:
-                o.objects.append(keys)
-        self.show(o)
+        self.show(o, hrepr_params)
 
 
 class Reader(EventDispatcher):
@@ -196,7 +209,7 @@ class Reader(EventDispatcher):
         d = json.loads(line)
         if 'objId' in d and 'obj' not in d:
             d['obj'] = id_registry.resolve(int(d['objId']))
-        message = ObjDict(d)
+        message = BucheMessage(d)
         self.emit(d.get('command', 'UNDEFINED'), message)
         # Provide the message to all the coroutines waiting for one
         futs, self.futures = self.futures, []
