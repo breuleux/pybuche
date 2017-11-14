@@ -47,6 +47,13 @@ class MasterBuche:
         self.write = write
         self.resources = set()
 
+    def require(self, *plugins):
+        for p in plugins:
+            if '/' in p or '.' in p:
+                self.send(command='require', path='/', pluginPath=p)
+            else:
+                self.send(command='require', path='/', pluginName=p)
+
     def send(self, d={}, **params):
         message = {**d, **params}
         if 'path' not in message:
@@ -94,6 +101,9 @@ class Buche:
             self.type = type
         self.params.update(params)
         return self
+
+    def require(self, *plugins):
+        self.master.require(*plugins)
 
     def send(self, path=None, **params):
         if not self.opened:
