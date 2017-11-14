@@ -14,7 +14,7 @@ You must install Buche_ through npm first (``npm install -g buche``). This packa
 
 .. code:: bash
 
-    buche -c 'python -u yourscript.py'
+    buche python -u yourscript.py
 
 Sample script:
 
