@@ -65,12 +65,26 @@ class MasterBuche:
     def show(self, obj, hrepr_params={}, **params):
         x = self.hrepr(obj, **hrepr_params)
         for res in self.hrepr.resources - self.resources:
-            self.send(
-                command = 'resource',
-                path = '/',
-                type = 'direct',
-                contents = str(res)
-            )
+            if res.name == 'buche-require':
+                if 'path' in res.attributes:
+                    self.send(
+                        command = 'require',
+                        path = '/',
+                        pluginPath = res.attributes['path']
+                    )
+                else:
+                    self.send(
+                        command = 'require',
+                        path = '/',
+                        pluginName = res.attributes['name']
+                    )
+            else:
+                self.send(
+                    command = 'resource',
+                    path = '/',
+                    type = 'direct',
+                    contents = str(res)
+                )
             self.resources.add(res)
         params.setdefault('command', 'log')
         self.send(format='html',
