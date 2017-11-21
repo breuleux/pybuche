@@ -175,7 +175,10 @@ class Buche:
         if attr.startswith('log_'):
             command = attr[4:]
             def _log(contents=None, **params):
-                self.send(command=command, contents=contents, **params)
+                if contents is None:
+                    self.send(command=command, **params)
+                else:
+                    self.send(command=command, contents=contents, **params)
             return _log
         elif attr.startswith('open_'):
             chtype = attr[5:]
