@@ -29,7 +29,7 @@ Sample script:
     buche['third_tab/one'].html('<b>Hello!</b>')
     buche['third_tab/two'].markdown('**Hello!!**')
 
-    buche.require('bokeh')
+    buche.require('bokeh', channels='bokeh')
     plot = buche.open_bokeh('plot', title="Polynomials")
     for i in range(100):
         plot['square'].log_data(x=i, y=i*i)

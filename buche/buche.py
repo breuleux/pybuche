@@ -47,12 +47,13 @@ class MasterBuche:
         self.write = write
         self.resources = set()
 
-    def require(self, *plugins):
-        for p in plugins:
-            if '/' in p or '.' in p:
-                self.send(command='require', path='/', pluginPath=p)
-            else:
-                self.send(command='require', path='/', pluginName=p)
+    def require(self, plugin, channels=None, components=None):
+        if '/' in plugin or '.' in plugin:
+            self.send(command='require', path='/', pluginPath=plugin,
+                      channels=channels, components=components)
+        else:
+            self.send(command='require', path='/', pluginName=plugin,
+                      channels=channels, components=components)
 
     def send(self, d={}, **params):
         message = {**d, **params}
@@ -66,18 +67,16 @@ class MasterBuche:
         x = self.hrepr(obj, **hrepr_params)
         for res in self.hrepr.resources - self.resources:
             if res.name == 'buche-require':
+                args = dict(
+                    command = 'require',
+                    path = '/',
+                    channels = res.attributes.get('channels', None),
+                    components = res.attributes.get('components', None)                    
+                )
                 if 'path' in res.attributes:
-                    self.send(
-                        command = 'require',
-                        path = '/',
-                        pluginPath = res.attributes['path']
-                    )
+                    self.send(pluginPath = res.attributes['path'], **args)
                 else:
-                    self.send(
-                        command = 'require',
-                        path = '/',
-                        pluginName = res.attributes['name']
-                    )
+                    self.send(pluginName = res.attributes['name'], **args)
             else:
                 self.send(
                     command = 'resource',
@@ -116,8 +115,8 @@ class Buche:
         self.params.update(params)
         return self
 
-    def require(self, *plugins):
-        self.master.require(*plugins)
+    def require(self, plugin, **opts):
+        self.master.require(plugin, **opts)
 
     def send(self, path=None, **params):
         if not self.opened:
