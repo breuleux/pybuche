@@ -121,6 +121,9 @@ class HRepr(StdHRepr):
         })
         return h
 
+    def hrepr_nowrap(self, obj, **kwargs):
+        return super().__call__(obj, **kwargs)
+
     def __call__(self, obj, **kwargs):
         res = super().__call__(obj, **kwargs)
         try:
