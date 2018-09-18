@@ -12,5 +12,6 @@ def _print_flush(x):
 
 master = MasterBuche(HRepr(), _print_flush)
 buche = Buche(master, '/')
+stdbuche = Buche(master, '/stdout')
 reader = Reader(sys.stdin)
 read = reader.read

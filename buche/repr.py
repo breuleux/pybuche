@@ -1,7 +1,7 @@
 
 import os
 import traceback
-from hrepr import StdHRepr
+from hrepr import StdHRepr, Tag
 from weakref import WeakValueDictionary
 from collections import deque
 from types import FrameType
@@ -59,41 +59,61 @@ def handle_exception(e, H, hrepr):
         tr = H.tr(H.td(i), H.td(hrepr(arg)))
         args_table = args_table(tr)
 
-    views = H.tabbedView['hrepr-Exception'](
-        H.strong(type(e).__name__),
-        f': {first}' if iss else '',
-        args_table
+    views = H.boxTabs()
+
+    if entries:
+        last = entries[-1]
+        for entry in entries:
+            filename, lineno, funcname, line = entry
+            absfile = os.path.abspath(filename)
+            view = H.tabEntry()
+            tab = H.tabLabel(
+                f'{funcname}@{os.path.basename(absfile)}'
+            )
+            snippet = H.codeSnippet(
+                src = absfile,
+                language = "python",
+                line = lineno,
+                context = 4
+            )
+            if filename.startswith('<'):
+                snippet = snippet(getattr(e, '__repl_string__', ""))
+
+            pane = H.tabPane(snippet)
+            if entry is last:
+                view = view(active = True)
+            views = views(view(tab, pane))
+
+    container = H.div['hrepr-Exception'](
+        H.div(
+            H.strong(type(e).__name__),
+            f': {first}' if iss else '',
+            args_table
+        ),
+        views
     )
-    if not entries:
-        return views
 
-    last = entries[-1]
-    for entry in entries:
-        filename, lineno, funcname, line = entry
-        absfile = os.path.abspath(filename)
-        view = H.view()
-        tab = H.tab(
-            f'{funcname}@{os.path.basename(absfile)}'
-        )
-        snippet = H.codeSnippet(
-            src = absfile,
-            language = "python",
-            line = lineno,
-            context = 4
-        )
-        if filename.startswith('<'):
-            snippet = snippet(getattr(e, '__repl_string__', ""))
+    return container
 
-        pane = H.pane(snippet)
-        if entry is last:
-            view = view(active = True)
-        views = views(view(tab, pane))
 
-    return views
+def handle_exception_resources(H):
+    return H.style('''
+        .hrepr-Exception {
+            display: inline-block;
+            border: 2px solid red;
+        }
+        .hrepr-Exception box-tabs {
+            border: 0px;
+            border-top: 1px solid black;
+        }
+    ''')
+
+
+handle_exception.resources = handle_exception_resources
 
 
 def handle_frame(fr, H, hrepr):
-    views = H.tabbedView()
+    views = H.boxTabs()
     code = fr.f_code
     info = dict(
         name=code.co_name,
@@ -107,8 +127,8 @@ def handle_frame(fr, H, hrepr):
         line = fr.f_lineno,
         context = 4
     )
-    views = views(H.view(H.tab('code'), H.pane(snippet)))
-    views = views(H.view(H.tab('info'), H.pane(hrepr(info))))
+    views = views(H.tabEntry(H.tabLabel('code'), H.tabPane(snippet)))
+    views = views(H.tabEntry(H.tabLabel('info'), H.tabPane(hrepr(info))))
     return views
 
 
@@ -125,10 +145,14 @@ class HRepr(StdHRepr):
         return super().__call__(obj, **kwargs)
 
     def __call__(self, obj, **kwargs):
+        interactive = kwargs.get('interactive', False) \
+            or self.config.interactive
         res = super().__call__(obj, **kwargs)
+        if not interactive or not isinstance(res, Tag):
+            return res
         try:
             the_id = id_registry.register(obj)
         except TypeError as e:
             return res
         else:
-            return self.H.iBox({'obj-id': the_id})(res)
+            return res({'onclick': f"bucheSend(event, '{the_id}')"})
