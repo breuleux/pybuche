@@ -141,7 +141,7 @@ class Buche:
         return HTMLSender(self, self.master.hrepr.H, False)
 
     @property
-    def repr(self):
+    def show(self):
         return HTMLSender(self, self.master.hrepr.H, False, True)
 
     @property
@@ -167,19 +167,15 @@ class Buche:
             item = self.join_path(item)
         return Buche(self.master, item)
 
-    def show(self, obj, hrepr_params={}, **params):
-        self.master.show(obj, hrepr_params=hrepr_params,
-                         parent=self.parent, **params)
-
     def dict(self, **keys):
-        self.show(BucheDict(keys))
+        self(BucheDict(keys))
 
     def __call__(self, *objs, **hrepr_params):
         if len(objs) == 1:
             o, = objs
         else:
             o = BucheSeq(objs)
-        self.show(o, hrepr_params)
+        self.master.show(o, hrepr_params=hrepr_params, parent=self.parent)
 
 
 class Reader(EventDispatcher):

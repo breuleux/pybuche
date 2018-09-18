@@ -10,7 +10,9 @@ def _print_flush(x):
     print(x, flush=True)
 
 
-master = MasterBuche(HRepr(), _print_flush)
+hrepr = HRepr()
+H = hrepr.H
+master = MasterBuche(hrepr, _print_flush)
 buche = Buche(master, '/')
 stdbuche = Buche(master, '/stdout')
 reader = Reader(sys.stdin)
