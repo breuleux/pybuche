@@ -129,6 +129,10 @@ class Buche:
 
     def send(self, parent=None, **params):
         if parent is None:
+            cmd = params.get('command', 'log')
+            if cmd in {'template', 'plugin', 'redirect', 'resource'}:
+                self.master.send(**params)
+                return
             parent = self.parent
         elif parent.startswith('/'):
             pass
