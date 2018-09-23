@@ -148,7 +148,9 @@ class HRepr(StdHRepr):
         interactive = kwargs.get('interactive', False) \
             or self.config.interactive
         res = super().__call__(obj, **kwargs)
-        if not interactive or not isinstance(res, Tag):
+        if not interactive \
+                or not isinstance(res, Tag) \
+                or res.attributes.get('interactive', False):
             return res
         try:
             the_id = id_registry.register(obj)
