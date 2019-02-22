@@ -217,7 +217,8 @@ class Reader(EventDispatcher):
             pass
 
     def start(self):
-        self.thread.start()
+        if not self.thread.is_alive():
+            self.thread.start()
 
     def read_async(self):
         fut = asyncio.Future()

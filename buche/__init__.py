@@ -4,6 +4,7 @@ from .buche import *
 from .repr import *
 from .event import *
 from .debug import *
+from .repl import *
 
 
 def _print_flush(x):
