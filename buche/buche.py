@@ -9,6 +9,17 @@ from .event import EventDispatcher
 from .repr import id_registry
 
 
+class Encoder(json.JSONEncoder):
+    def default(self, obj):
+        if isinstance(obj, Tag):
+            return str(obj)
+        else:
+            super().default(obj)
+
+
+encoder = Encoder()
+
+
 class BucheMessage:
     def __init__(self, d):
         self.__dict__.update(d)
@@ -54,7 +65,7 @@ class MasterBuche:
 
     def send(self, d={}, **params):
         message = {**d, **params}
-        self.write(json.dumps(message))
+        self.write(encoder.encode(message))
 
     def generate(self, obj, hrepr_params={}):
         x = self.hrepr(obj, **hrepr_params)
