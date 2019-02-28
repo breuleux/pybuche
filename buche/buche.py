@@ -191,8 +191,8 @@ class Reader(EventDispatcher):
         self.futures = []
 
     def read(self):
-        line = self.source.readline()
-        return self.parse(line)
+        loop = asyncio.get_event_loop()
+        return loop.run_until_complete(self.read_async())
 
     def parse(self, line):
         d = json.loads(line)

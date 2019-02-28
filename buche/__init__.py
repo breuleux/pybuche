@@ -18,3 +18,5 @@ buche = Buche(master, '/')
 stdbuche = Buche(master, '/stdout')
 reader = Reader(sys.stdin)
 read = reader.read
+repl = Repl(buche, reader)
+breakpoint = BucheDb(repl).set_trace

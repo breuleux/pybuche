@@ -66,24 +66,7 @@ class Repl:
             self.input.command_set(value=self.cmdlog[self.cmdidx])
 
     def _repl_line(self, event, message):
-        if not message.path.endswith(self.input_address):
-            return
-
-        glob = self.code_globals.globals
-        code = message.value
-        if code.strip() == '':
-            return
-        self.log.html.logEntry['echo'](code)
-        self.input.command_set()
-        try:
-            res = self.eval(self, code, self.code_globals)
-        except Exception as exc:
-            self.log.show.logEntry['error'](exc)
-        else:
-            if res is not None:
-                self.log.show.logEntry['result'](res, interactive=True)
-        self.cmdlog.append(code)
-        self.cmdidx = 0
+        return self.handle_message(message)
 
     def _repl_select(self, event, message):
         if self.log_address not in message.enclosingPath:
@@ -94,18 +77,50 @@ class Repl:
             self.input.command_append(value=varname)
             self.input.command_focus()
 
-    def start(self, nodisplay=False):
+    def handle_message(self, message, eval=None):
+        if message.eventType != 'submit':
+            return False
+        if not message.path.endswith(self.input_address):
+            return False
+        return self.run(message.value, eval)
+
+    def run(self, code, eval=None):
+        if code.strip() == '':
+            return False
+        self.log.html.logEntry['echo'](code)
+        self.input.command_set()
+        try:
+            res = (eval or self.eval)(self, code, self.code_globals)
+        except Exception as exc:
+            self.log.show.logEntry['error'](exc)
+        else:
+            if res is not None:
+                self.log.show.logEntry['result'](res, interactive=True)
+        self.cmdlog.append(code)
+        self.cmdidx = 0
+        return True
+
+    def start(self, nodisplay=False, synchronous=False):
         if self.started:
             return
 
         if not nodisplay:
             self.buche(self)
 
-        self.reader.on_submit(self._repl_line)
+        if not synchronous:
+            self.reader.on_submit(self._repl_line)
         self.reader.on_keyup(self._repl_key)
         self.reader.on_click(self._repl_select)
         self.reader.start()
         self.input.command_focus()
+        self.started = True
+
+    def query(self, eval=None):
+        while True:
+            message = self.reader.read()
+            if not self.handle_message(message, eval):
+                continue
+            break
 
     def __hrepr__(self, H, hrepr):
         return H.div['repl-box'](

@@ -127,7 +127,9 @@ def handle_frame(fr, H, hrepr):
         line = fr.f_lineno,
         context = 4
     )
-    views = views(H.tabEntry(H.tabLabel('code'), H.tabPane(snippet)))
+    views = views(H.tabEntry(H.tabLabel('code'),
+                             H.tabPane(snippet),
+                             active=True))
     views = views(H.tabEntry(H.tabLabel('info'), H.tabPane(hrepr(info))))
     return views
 
