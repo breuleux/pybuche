@@ -126,9 +126,9 @@ You can start an interactive evaluator very easily:
     from buche import repl
     repl.start()
 
-Run `buche python3 repl.py` and you will get an empty window and an input box at the bottom. You can evaluate Python expressions in the input box and get very pretty output, and you can also click on the representations of the objects in order to put them in temporary variables.
+Run ``buche python3 repl.py`` and you will get an empty window and an input box at the bottom. You can evaluate Python expressions in the input box and get very pretty output, and you can also click on the representations of the objects in order to put them in temporary variables.
 
-Note: `start` is non-blocking. For a blocking version you can do this:
+Note: ``start`` is non-blocking. For a blocking version you can do this:
 
 .. code:: python
 
@@ -140,7 +140,8 @@ Note: `start` is non-blocking. For a blocking version you can do this:
 Debugger
 --------
 
-By setting the environment variable `PYTHONBREAKPOINT` to `buche.breakpoint`, calls to the builtin `breakpoint()` will use Buche's repl for debugging. You can use it essentially the same way as `pdb`, but you get pretty HTML printing.
+By setting the environment variable ``PYTHONBREAKPOINT`` to ``buche.breakpoint``, calls to the builtin ``breakpoint()`` will use Buche's repl for debugging. You can use it essentially the same way as ``pdb``, but you get pretty HTML printing.
 
 .. code:: bash
+
     PYTHONBREAKPOINT=buche.breakpoint buche python3 mycode.py
