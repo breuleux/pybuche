@@ -1,4 +1,5 @@
 
+import os
 import sys
 from .buche import *
 from .repr import *
@@ -11,7 +12,11 @@ def _print_flush(x):
     print(x, flush=True)
 
 
-hrepr = HRepr()
+def smart_breakpoint():
+    if os.environ.get('BUCHE'):
+        os.environ['PYTHONBREAKPOINT'] = 'buche.breakpoint'
+
+
 H = hrepr.H
 master = MasterBuche(hrepr, _print_flush)
 buche = Buche(master, '/')
