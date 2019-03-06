@@ -16,6 +16,12 @@ You must install Buche_ first, either from the release_ or through npm (``npm in
 
 .. code:: bash
 
+    python -m buche yourscript.py
+
+Alternatively, using ``buche`` directly:
+
+.. code:: bash
+
     buche python -u yourscript.py
 
 .. _Buche: https://github.com/breuleux/buche
@@ -145,3 +151,5 @@ By setting the environment variable ``PYTHONBREAKPOINT`` to ``buche.breakpoint``
 .. code:: bash
 
     PYTHONBREAKPOINT=buche.breakpoint buche python3 mycode.py
+
+This variable is automatically set when you run a script with ``python -m buche``.

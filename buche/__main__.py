@@ -18,7 +18,7 @@ Or if npm is installed, you can run the command:
 if __name__ == '__main__':
     os.environ['PYTHONBREAKPOINT'] = 'buche.breakpoint'
     try:
-        os.execvp('buche', ['buche', 'python3'] + sys.argv[1:])
+        os.execvp('buche', ['buche', 'python3', '-u'] + sys.argv[1:])
     except FileNotFoundError:
         print(errmsg, file=sys.stderr)
         sys.exit(1)
