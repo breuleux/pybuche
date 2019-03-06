@@ -160,3 +160,6 @@ class HRepr(StdHRepr):
             return res
         else:
             return res({'onclick': f"bucheSend(event, '{the_id}')"})
+
+
+hrepr = HRepr()
